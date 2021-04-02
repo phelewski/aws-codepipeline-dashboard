@@ -13,10 +13,10 @@ class Deploy:
         self.s3 = boto3.client('s3')
         self.stack_name = sys.argv[1]
         self.s3_bucket = sys.argv[2]
-        self.pipeline_pattern = sys.argv[3]
-        self.cft_file_name = 'template.yaml'
+        self.cft_file_name = sys.argv[3]
+        self.pipeline_pattern = sys.argv[4]
         self.cft_s3_file_name = 'aws-codepipeline-dashboard-cft.yaml'
-        self.lambda_zip_file_name = 'aws-codepipeline-dashboard-lambda-0.0.12'
+        self.lambda_zip_file_name = 'aws-codepipeline-dashboard-lambda-0.0.1'
         self.lambda_dir_name = 'src'
         self.parameters = [
             {
@@ -110,9 +110,6 @@ class Deploy:
                 raise e
 
     def deploy_cloudformation(self) -> None:
-        # print("Updating version numbers")
-        # subprocess.call(["bump2version", "--allow-dirty", "patch", "deploy.py"])
-
         print("Compressing Lamdba Script")
         self. _compress_file(self.lambda_zip_file_name, 'zip', self.lambda_dir_name)
 
@@ -137,8 +134,6 @@ class Deploy:
 
 
 def main():
-    print("Updating version numbers")
-    subprocess.call(["bump2version", "--allow-dirty", "patch", "deploy.py"])
     Deploy().deploy_cloudformation()
 
 
