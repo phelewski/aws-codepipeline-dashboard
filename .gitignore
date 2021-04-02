@@ -127,3 +127,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Lambda ZIP
+aws-codepipeline-dashboard-lambda-*.zip

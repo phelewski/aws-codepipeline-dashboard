@@ -2,8 +2,15 @@ MAKEFLAGS += --silent
 include .env
 
 ## Bump Version
-bump-version:
+bump-version: bump2version automated-version-commit
+
+bump2version:
 	bump2version patch scripts/deploy.py
+
+automated-version-commit:
+	git add .bumpversion.cfg
+	git add scripts/deploy.py
+	git commit -m "Automated: Bumping lambda package version to $(shell bump2version --allow-dirty --dry-run --list patch | grep current_version | sed -r s,"^.*=",,)"
 
 ## Deploy Stack
 deploy: validate bump-version
