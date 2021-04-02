@@ -2,27 +2,27 @@
 
 Simple dashboard built for viewing pipeline metrics in AWS. Built using CloudWatch Dashboards and Metrics populated from CloudWatch Events that CodePipeline triggers.
 
-![Screen Shot](https://github.com/stelligent/pipeline-dashboard/blob/master/docs/screen-shot.png) # TODO:
+![Dashboard Example](docs/AWS_CodePipeline_Dashboard_Example.png)
 
-## Launch now!
 
-# TODO:
-1. From your local `pipeline-dashboard` GitHub repo, create a zip file.
-```
-zip -r pipeline-dashboard.zip *.* ./src ./test
-```
-2. Upload the zip file to S3.
+## Deploy now!
 
+1. You'll need to ensure that you have access to an S3 Bucket, if not, create one and note the name.
+2. Create a new `.env` file and update the values to reflect your desired environment.
+``` bash
+cp .env-sample .env
 ```
-aws s3 mb s3://pipeline-dashboard-$(aws sts get-caller-identity --output text --query 'Account')
-aws s3 sync . s3://pipeline-dashboard-$(aws sts get-caller-identity --output text --query 'Account')
+Make sure you update the values to reflect your environment and situation:
+* `STACK_NAME`: Replace with what you want your CloudFormation Stack name to be
+* `BUCKET`: Replace with the name of the bucket you want to use for template and script storage
+* `CFN_TEMPLATE`: This value can be left the same if you don't rename the default CloudFormation Template file
+* `PIPELINE_PATTERN`: Replace this with the desired CodePipelne pattern name for your Dashboard
+3. Run the `make` command to bundle the scripts and deploy the CloudFormation template.
+``` bash
+make deploy
 ```
-3. Make note of the S3 Bucket and zip file name.
-4. Launch the CloudFormation stack by running the command below. You will need to change the `--template-body` *value* to point to the location of the `template.yml` on your machine. You will also change `ACCOUNTID` to your AWS account id.
-```
-aws cloudformation create-stack --stack-name pipeline-dashboard-stack --template-body file:///home/ec2-user/environment/pipeline-dashboard/template.yml  --parameters ParameterKey=PipelinePattern,ParameterValue=* ParameterKey=BucketName,ParameterValue=pipeline-dashboard-ACCOUNTID ParameterKey=CodeKey,ParameterValue=pipeline-dashboard.zip --capabilities CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND --disable-rollback
-```
-5. Once the CloudFormation stack is **CREATE-COMPLETE**, you will need to trigger a few CodePipeline runs in order to update the CloudWatch dashboard. After these runs, go to the [CloudWatch Console](https://console.aws.amazon.com/cloudwatch) and click on **Dashboards** to see the metrics reflected in the dashboard. 
+4. Once the deploy commands are completed, you will need to trigger a few CodePipeline runs in order to update the CloudWatch dashboard. After these runs, go to the [CloudWatch Console](https://console.aws.amazon.com/cloudwatch) and click on **Dashboards** to see the metrics reflected in the dashboard. 
+
 
 # Architecture
 
@@ -35,7 +35,7 @@ The list of pipelines in the dashboard cannot be generated dyanmically so anothe
 
 # Metric Details
 
-![Fail 1](docs/pipeline-dashboard-fail-1.png)
+![Pipeline Runs Metric Details](docs/pipeline-run-example-metrics-layout.png)
 
 | Metric | Description | How to Calculate | How to Interpret |
 | -------| ----------- | ---------------- | ---------------- |
@@ -45,21 +45,19 @@ The list of pipelines in the dashboard cannot be generated dyanmically so anothe
 | `MTTR` | How long does it take to fix the pipeline.  | The mean interval of time between the start of a failed pipeline execution and the start of a successful pipeline execution.| This number should be low as it is a measure of a team's ability to "stop the line" when a build fails and swarm on resolving it. If the `Feedback Time` is high, then consider addressing that, otherwise the issue is with the team's responsiveness to failures.|
 | `Feedback Time` | How quick can we identify failures.  | The mean amount of time from commit to failure of a pipeline execution.  | This number should be low as it affect `MTTR`.  Ideally, failures would be detected as quick as possible in the pipeline, rather than finding them farther along in the pipeline.  |
 
-## Cycle Time vs. Lead Time
-`Cycle Time` and `Lead Time` are frequently confused.  For a good explanation, please see [Continuous Delivery: lead time and cycle time](http://www.caroli.org/continuous-delivery-lead-time-and-cycle-time/).  To compare the two metrics consider the following scenarios.  Notice that `Lead Time` is the same for the pipelines in both scenarios, however the cycle time is much smaller in the second scenario due to the fact that the pipelines are running in parallel (higher `WIP`).  This agrees with the formula `Lead Time = WIP x Cycle Time`:
 
-![Success 1](docs/pipeline-dashboard-success-1.png)
-*Fig.1 - Pipelines in series*
+# Dependencies
 
-![Success 2](docs/pipeline-dashboard-success-2.png)
-*Fig.2 - Pipelines in parallel*
+The project has a couple of dependencies when deploying using the `make` command.
+
+Please be sure to have the following items installed before using this project:
+* [cfn_nag](https://github.com/stelligent/cfn_nag)
+* [bump2version](https://pypi.org/project/bump2version/) (Only for development purposes)
 
 
 # Development
 
-To run the unit tests: `npm test`
-
-To deploy the CodeBuild project for staging the templates: `npm run create-codebuild` or `npm run update-codebuild`
-
-To deploy to your account: `npm run deploy`
-You can change the bucket via `npm config set pipeline-dashboard:staging_bucket my-bucket-name`
+To update the environment after adjusting the lamdba functions and python scripts you'll need to redeploy. First commit your changes and then determine if the changes/updates are worther of a patch, minor, or major version change. Then just run the corresponding deploy-VERSION command.
+* Patch: `make deploy-patch`
+* Minor: `make deploy-minor`
+* Major: `make deploy-major`
