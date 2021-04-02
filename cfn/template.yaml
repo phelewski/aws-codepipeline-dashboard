@@ -1,19 +1,19 @@
-AWSTemplateFormatVersion: "2010-09-09"
-Transform: "AWS::Serverless-2016-10-31"
-Description: "Create pipeline-dashboard application."
+AWSTemplateFormatVersion: 2010-09-09
+Transform: AWS::Serverless-2016-10-31
+Description: Create aws-codepipeline-dashboard application
 Parameters:
   PipelinePattern:
     Description: "The pattern of pipeline names to allow access to describe.  Recommended value: *"
     Type: String
   BucketName:
-    Description: "S3 BucketName for Node functions. For example: pipeline-dashboard"
+    Description: "S3 BucketName the Python package. For example: codepipeline-dashboard"
     Type: String
   CodeKey:
-    Description: "S3 Key for Node functions. For example: pipeline-dashboard.zip"
+    Description: "S3 Key for the Python package. For example: codepipeline-dashboard.zip"
     Type: String
 Resources:
   PipelineDashboardEventHandler:
-    Type: "AWS::Serverless::Function"
+    Type: AWS::Serverless::Function
     Properties:
       Description: Create CloudWatch metrics from CodePipeline events
       Handler: main.pipeline_event_handler
@@ -30,15 +30,15 @@ Resources:
           Properties:
             Pattern:
               source:
-                - "aws.codepipeline"
+                - aws.codepipeline
               detail-type:
-                - "CodePipeline Pipeline Execution State Change"
+                - CodePipeline Pipeline Execution State Change
       Policies:
         - CloudWatchPutMetricPolicy: {}
         - CodePipelineReadOnlyPolicy:
             PipelineName: !Ref PipelinePattern
   PipelineDashboardGenerator:
-    Type: "AWS::Serverless::Function"
+    Type: AWS::Serverless::Function
     Properties:
       Description: Build CloudWatch dashboard from CloudWatch metrics
       Handler: main.dashboard_handler
@@ -51,6 +51,6 @@ Resources:
         DashboardEventRule:
           Type: Schedule
           Properties:
-            Schedule: "cron(*/5 * * * ? *)"
+            Schedule: cron(*/5 * * * ? *)
       Policies:
         - CloudWatchDashboardPolicy: {}
