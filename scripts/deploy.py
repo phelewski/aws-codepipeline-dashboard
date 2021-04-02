@@ -1,6 +1,5 @@
 import io
 import shutil
-import subprocess
 import sys
 
 import boto3
