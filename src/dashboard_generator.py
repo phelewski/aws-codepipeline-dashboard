@@ -18,16 +18,16 @@ class DashboardGenerator():
         self.dashboard_name = f'Pipelines-{self.region}'
         self.widget_descriptions = [
             {
-                "title": "Cycle Time",
-                "description": "mean time between successful pipeline executions"
-            },
-            {
                 "title": "Success Lead Time",
                 "description": "mean lead time for successful pipeline executions"
             },
             {
                 "title": "Delivery Lead Time",
                 "description": "mean lead time from commit to production, including rework"
+            },
+            {
+                "title": "Cycle Time",
+                "description": "mean time between successful pipeline executions"
             },
             {
                 "title": "MTBF",
@@ -134,17 +134,6 @@ class DashboardGenerator():
                     ],
                     [
                         ".",
-                        "SuccessCycleTime",
-                        ".",
-                        ".",
-                        {
-                            "label": "Cycle Time",
-                            "stat": "Average",
-                            "color": "#212ebd"
-                        }
-                    ],
-                    [
-                        ".",
                         "SuccessLeadTime",
                         ".",
                         ".",
@@ -161,6 +150,17 @@ class DashboardGenerator():
                         ".",
                         {
                             "label": "Delivery Lead Time",
+                            "stat": "Average",
+                            "color": "#212ebd"
+                        }
+                    ],
+                    [
+                        ".",
+                        "SuccessCycleTime",
+                        ".",
+                        ".",
+                        {
+                            "label": "Cycle Time",
                             "stat": "Average",
                             "color": "#d6721b"
                         }
