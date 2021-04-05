@@ -145,6 +145,17 @@ class DashboardGenerator():
                     ],
                     [
                         ".",
+                        "DeliveryLeadTime",
+                        ".",
+                        ".",
+                        {
+                            "label": "Lead Time",
+                            "stat": "Average",
+                            "color": "#d6721b"
+                        }
+                    ],
+                    [
+                        ".",
                         "YellowTime",
                         ".",
                         ".",
