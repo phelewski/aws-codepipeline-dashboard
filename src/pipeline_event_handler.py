@@ -197,8 +197,10 @@ class PipelineEventHandler():
             f"{inspect.stack()[0][3]} - Checking the event status to determine what CloudWatch Metric to push"
         )
         if self.event['detail']['state'] == 'SUCCEEDED':
+            self.logger.debug(f"{inspect.stack()[0][3]} - Adding SuccessCount Metric")
             self.add_metric('SuccessCount', self.count, 1)
         elif self.event['detail']['state'] == 'FAILED':
+            self.logger.debug(f"{inspect.stack()[0][3]} - Adding FailureCount Metric")
             self.add_metric('FailureCount', self.count, 1)
 
     def _handle_pipeline_yellow_and_red_time(self) -> None:
@@ -211,13 +213,17 @@ class PipelineEventHandler():
         self.logger.debug(f"{inspect.stack()[0][3]} - Comparing the current and previous execution status")
         try:
             if self.current_pipeline_execution['status'] != self.prior_state_execution['status']:
+                self.logger.debug(
+                    f"{inspect.stack()[0][3]} - Current Pipeline Execution status does not equal Prior state execution")
                 duration = self._duration_in_seconds(
                     self.prior_state_execution['startTime'], self.current_pipeline_execution['startTime']
                 )
 
                 if self.current_pipeline_execution['status'] == 'Succeeded':
+                    self.logger.debug(f"{inspect.stack()[0][3]} - Adding RedTime Metric")
                     self.add_metric('RedTime', self.seconds, duration)
                 elif self.current_pipeline_execution['status'] == 'Failed':
+                    self.logger.debug(f"{inspect.stack()[0][3]} - Adding YellowTime Metric")
                     self.add_metric('YellowTime', self.seconds, duration)
         except AttributeError as e:
             if "'PipelineEventHandler' object has no attribute 'prior_state_execution'" in str(e):
@@ -233,9 +239,12 @@ class PipelineEventHandler():
         self.logger.debug(f"{inspect.stack()[0][3]} - Comparing the current and previous successful execution status")
         try:
             if self.current_pipeline_execution and self.current_pipeline_execution['status'] == 'Succeeded' and self.prior_success_execution:
+                self.logger.debug(
+                    f"{inspect.stack()[0][3]} - Current Pipeline Execution is True, and Current Pipeline Execution Status equals 'Succeeded', and Prior Success Execution is True")
                 duration = self._duration_in_seconds(
                     self.prior_success_execution['lastUpdateTime'], self.current_pipeline_execution['lastUpdateTime']
                 )
+                self.logger.debug(f"{inspect.stack()[0][3]} - Adding SuccessCycleTime Metric")
                 self.add_metric('SuccessCycleTime', self.seconds, duration)
         except AttributeError as e:
             if "'PipelineEventHandler' object has no attribute 'prior_success_execution'" in str(e):
@@ -250,16 +259,23 @@ class PipelineEventHandler():
         self.logger.debug(f"{inspect.stack()[0][3]} - Checking the current execution status")
         try:
             if self.current_pipeline_execution['status'] == 'Succeeded':
+                self.logger.debug(f"{inspect.stack()[0][3]} - Current Pipeline Execution Status equals 'Succeeded'")
                 duration = self._duration_in_seconds(
                     self.current_pipeline_execution['startTime'], self.current_pipeline_execution['lastUpdateTime'])
+                self.logger.debug(f"{inspect.stack()[0][3]} - Adding SuccessLeadTime Metric")
                 self.add_metric('SuccessLeadTime', self.seconds, duration)  # TODO: add this metric to dashboard
                 if self.pipeline_state_is_final and self.prior_success_plus_one_execution:
+                    self.logger.debug(
+                        f"{inspect.stack()[0][3]} - Pipeline State is Final and Prior Success plus 1 execution is True")
                     lead_duration = self._duration_in_seconds(
                         self.prior_success_plus_one_execution['startTime'], self.current_pipeline_execution['lastUpdateTime'])
+                    self.logger.debug(f"{inspect.stack()[0][3]} - Adding DeliveryLeadTime Metric")
                     self.add_metric('DeliveryLeadTime', self.seconds, lead_duration)
             elif self.current_pipeline_execution['status'] == 'Failed':
+                self.logger.debug(f"{inspect.stack()[0][3]} - Current Pipeline Execution status equals 'Failed'")
                 duration = self._duration_in_seconds(
                     self.current_pipeline_execution['startTime'], self.current_pipeline_execution['lastUpdateTime'])
+                self.logger.debug(f"{inspect.stack()[0][3]} - Adding FailureLeadTime Metric")
                 self.add_metric('FailureLeadTime', self.seconds, duration)
         except AttributeError as e:
             if "'PipelineEventHandler' object has no attribute 'pipeline_state_is_final'" in str(e):
