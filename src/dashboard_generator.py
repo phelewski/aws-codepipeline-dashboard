@@ -34,7 +34,7 @@ class DashboardGenerator():
             #     "description": "todo fill in more information later"
             # },
             {
-                "title": "Delivery Lead Time",
+                "title": "Lead Time",
                 "description": "mean lead time from commit to production, including rework"
             },
             {
@@ -168,7 +168,7 @@ class DashboardGenerator():
                         ".",
                         ".",
                         {
-                            "label": "Delivery Lead Time",
+                            "label": "Lead Time",
                             "stat": "Average",
                             "color": "#d6721b"
                         }
