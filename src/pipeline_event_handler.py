@@ -13,7 +13,7 @@ from logger import Logger
 
 class PipelineEventHandler():
     def __init__(self, event: dict) -> None:
-        self.logger = Logger(logger_name='PipelineEventHandler', level='DEBUG').setup_logger()
+        self.logger = Logger(logger_name='PipelineEventHandler', level='INFO').setup_logger()
         self.event = event
         self.allowed_state = ['SUCCEEDED', 'FAILED']
         self.allowed_status = ['Succeeded', 'Failed']
@@ -117,76 +117,38 @@ class PipelineEventHandler():
         return None
 
     def _process_pipeline_executions(self) -> None:
+        """
+        Runs through the list of pipeline executions and sets the proper class variables if specific criteria matches.
+        """
         pipeline_executions = self._filter_pipeline_executions()
         pipeline_state_is_final = False
 
         self.logger.debug(f"{inspect.stack()[0][3]} - Running through pipeline execution list")
         for execution in pipeline_executions:
             if not pipeline_state_is_final:
-                self.logger.debug(f"{inspect.stack()[0][3]} - Pipeline state is not final")
-                # Find the current execution
+                self.logger.debug(f"{inspect.stack()[0][3]} - Finding the current execution")
                 if execution['pipelineExecutionId'] == self.execution_id:
-                    self.logger.debug(
-                        f"{inspect.stack()[0][3]} - Current execution found, setting self.current_pipeline_execution & self.prior_success_plus_one_execution")
                     self.current_pipeline_execution = execution
                     self.prior_success_plus_one_execution = execution
                 elif self.current_pipeline_execution:
-                    self.logger.debug(f"{inspect.stack()[0][3]} - Current Pipeline Execution exists")
-                    # If current execution is a success, find the prior success and the one right after that
+                    self.logger.debug(
+                        f"{inspect.stack()[0][3]} - If the current execution is a success, find the prior successful "
+                        "run and the next execution after that"
+                    )
                     if self.current_pipeline_execution['status'] == 'Succeeded':
-                        self.logger.debug(f"{inspect.stack()[0][3]} - Current Pipeline Execution status is Succeeded")
                         if execution['status'] == 'Succeeded':
-                            self.logger.debug(
-                                f"{inspect.stack()[0][3]} - Execution status is Succeeded, setting self.prior_success_execution")
                             self.prior_success_execution = execution
                         else:
-                            self.logger.debug(
-                                f"{inspect.stack()[0][3]} - Current Pipeline Execution status is NOT Succeeded, setting self.prior_success_plus_one_execution")
                             self.prior_success_plus_one_execution = execution
-                    # Next, if state is different from current then we keep it
+                    self.logger.debug(
+                        f"{inspect.stack()[0][3]} - Next, if the state is different from the current then we keep it. "
+                        "Then finally we are done if the state is the same as current"
+                    )
                     if execution['status'] != self.current_pipeline_execution['status']:
-                        self.logger.debug(
-                            f"{inspect.stack()[0][3]} - Execution status does not equal current pipeline execution status, setting self.prior_state_execution")
                         self.prior_state_execution = execution
-                    # Finally, we are done if the state is the same as current
                     elif execution['status'] == self.current_pipeline_execution['status']:
-                        self.logger.debug(
-                            f"{inspect.stack()[0][3]} - Execution status equals current pipeline execution status, setting self.pipeline_state_is_final")
                         pipeline_state_is_final = True
                         self.pipeline_state_is_final = pipeline_state_is_final
-
-    # def _get_prior_pipeline_execution(self) -> dict:
-    #     """
-    #     Grabs the second item from the filtered list of pipeline executions
-
-    #     Returns:
-    #         dict: CodePipeline execution summary
-    #     """
-    #     pipeline_executions = self._filter_pipeline_executions()
-    #     prior_execution = pipeline_executions[1]
-
-    #     self.logger.debug(f"{inspect.stack()[0][3]} - Prior pipeline execution summary: {prior_execution}")
-    #     return prior_execution
-
-    # def _get_prior_successful_pipeline_execution(self) -> None:
-    #     """
-    #     Runs through the filtered list of pipeline executions to find the previous successful execution and defines
-    #     that variable
-    #     """
-    #     pipeline_executions = self._filter_pipeline_executions()
-
-    #     self.logger.debug(
-    #         f"{inspect.stack()[0][3]} - Running through the filtered list of pipeline executions to find the previous "
-    #         "successful execution"
-    #     )
-    #     for execution in pipeline_executions:
-    #         if execution['pipelineExecutionId'] == self.execution_id:
-    #             pass
-    #         elif execution['status'] == 'Succeeded':
-    #             self.prior_success_execution_id = execution['pipelineExecutionId']
-    #             break
-    #         else:
-    #             self.prior_success_execution_id = None
 
     def _handle_final_state(self) -> None:
         """
@@ -206,9 +168,6 @@ class PipelineEventHandler():
         """
         Checks to see if a yellow or red time metric should be added for the pipeline execution
         """
-        # current_execution = self._get_pipeline_execution(self.execution_id)
-        # prior_execution = self._get_prior_pipeline_execution()
-
         self.logger.debug(f"{inspect.stack()[0][3]} - Comparing the current and previous execution status")
         try:
             if self.current_pipeline_execution['status'] != self.prior_state_execution['status']:
@@ -232,9 +191,6 @@ class PipelineEventHandler():
         """
         Checks to see if a successful cycle time metric should be added for the pipeline execution
         """
-        # current_execution = self._get_pipeline_execution(self.execution_id)
-        # prior_successful_execution = self._get_pipeline_execution(self.prior_success_execution_id)
-
         self.logger.debug(f"{inspect.stack()[0][3]} - Comparing the current and previous successful execution status")
         try:
             if self.current_pipeline_execution and self.current_pipeline_execution['status'] == 'Succeeded' and self.prior_success_execution:
@@ -253,28 +209,23 @@ class PipelineEventHandler():
         """
         Checks to see if a successful or failure metric should be added for the pipeline execution
         """
-        # current_execution = self._get_pipeline_execution(self.execution_id)
-
         self.logger.debug(f"{inspect.stack()[0][3]} - Checking the current execution status")
         try:
             if self.current_pipeline_execution['status'] == 'Succeeded':
-                self.logger.debug(f"{inspect.stack()[0][3]} - Current Pipeline Execution Status equals 'Succeeded'")
                 duration = self._duration_in_seconds(
-                    self.current_pipeline_execution['startTime'], self.current_pipeline_execution['lastUpdateTime'])
-                self.logger.debug(f"{inspect.stack()[0][3]} - Adding SuccessLeadTime Metric")
+                    self.current_pipeline_execution['startTime'], self.current_pipeline_execution['lastUpdateTime']
+                )
                 self.add_metric('SuccessLeadTime', self.seconds, duration)
                 if self.pipeline_state_is_final and self.prior_success_plus_one_execution:
-                    self.logger.debug(
-                        f"{inspect.stack()[0][3]} - Pipeline State is Final and Prior Success plus 1 execution is True")
                     lead_duration = self._duration_in_seconds(
-                        self.prior_success_plus_one_execution['startTime'], self.current_pipeline_execution['lastUpdateTime'])
-                    self.logger.debug(f"{inspect.stack()[0][3]} - Adding DeliveryLeadTime Metric")
+                        self.prior_success_plus_one_execution['startTime'],
+                        self.current_pipeline_execution['lastUpdateTime']
+                    )
                     self.add_metric('DeliveryLeadTime', self.seconds, lead_duration)
             elif self.current_pipeline_execution['status'] == 'Failed':
-                self.logger.debug(f"{inspect.stack()[0][3]} - Current Pipeline Execution status equals 'Failed'")
                 duration = self._duration_in_seconds(
-                    self.current_pipeline_execution['startTime'], self.current_pipeline_execution['lastUpdateTime'])
-                self.logger.debug(f"{inspect.stack()[0][3]} - Adding FailureLeadTime Metric")
+                    self.current_pipeline_execution['startTime'], self.current_pipeline_execution['lastUpdateTime']
+                )
                 self.add_metric('FailureLeadTime', self.seconds, duration)
         except AttributeError as e:
             if "'PipelineEventHandler' object has no attribute 'pipeline_state_is_final'" in str(e):
@@ -343,8 +294,6 @@ class PipelineEventHandler():
         self._check_for_allowed_state()
         self._check_for_pipeline_prefix()
         self._process_pipeline_executions()
-        # self._get_prior_pipeline_execution()
-        # self._get_prior_successful_pipeline_execution()
         self._handle_final_state()
         self._handle_pipeline_yellow_and_red_time()
         self._handle_pipeline_cycle_time()
