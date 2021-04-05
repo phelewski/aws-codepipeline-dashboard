@@ -15,7 +15,7 @@ class Deploy:
         self.cft_file_name = sys.argv[3]
         self.pipeline_pattern = sys.argv[4]
         self.cft_s3_file_name = 'aws-codepipeline-dashboard-cft.yaml'
-        self.lambda_zip_file_name = 'aws-codepipeline-dashboard-lambda-0.0.12'
+        self.lambda_zip_file_name = 'aws-codepipeline-dashboard-lambda-0.0.13'
         self.lambda_dir_name = 'src'
         self.parameters = [
             {
