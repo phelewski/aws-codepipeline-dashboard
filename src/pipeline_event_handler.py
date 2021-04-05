@@ -158,10 +158,8 @@ class PipelineEventHandler():
             f"{inspect.stack()[0][3]} - Checking the event status to determine what CloudWatch Metric to push"
         )
         if self.event['detail']['state'] == 'SUCCEEDED':
-            self.logger.debug(f"{inspect.stack()[0][3]} - Adding SuccessCount Metric")
             self.add_metric('SuccessCount', self.count, 1)
         elif self.event['detail']['state'] == 'FAILED':
-            self.logger.debug(f"{inspect.stack()[0][3]} - Adding FailureCount Metric")
             self.add_metric('FailureCount', self.count, 1)
 
     def _handle_pipeline_yellow_and_red_time(self) -> None:
@@ -171,17 +169,13 @@ class PipelineEventHandler():
         self.logger.debug(f"{inspect.stack()[0][3]} - Comparing the current and previous execution status")
         try:
             if self.current_pipeline_execution['status'] != self.prior_state_execution['status']:
-                self.logger.debug(
-                    f"{inspect.stack()[0][3]} - Current Pipeline Execution status does not equal Prior state execution")
                 duration = self._duration_in_seconds(
                     self.prior_state_execution['startTime'], self.current_pipeline_execution['startTime']
                 )
 
                 if self.current_pipeline_execution['status'] == 'Succeeded':
-                    self.logger.debug(f"{inspect.stack()[0][3]} - Adding RedTime Metric")
                     self.add_metric('RedTime', self.seconds, duration)
                 elif self.current_pipeline_execution['status'] == 'Failed':
-                    self.logger.debug(f"{inspect.stack()[0][3]} - Adding YellowTime Metric")
                     self.add_metric('YellowTime', self.seconds, duration)
         except AttributeError as e:
             if "'PipelineEventHandler' object has no attribute 'prior_state_execution'" in str(e):
@@ -194,12 +188,9 @@ class PipelineEventHandler():
         self.logger.debug(f"{inspect.stack()[0][3]} - Comparing the current and previous successful execution status")
         try:
             if self.current_pipeline_execution and self.current_pipeline_execution['status'] == 'Succeeded' and self.prior_success_execution:
-                self.logger.debug(
-                    f"{inspect.stack()[0][3]} - Current Pipeline Execution is True, and Current Pipeline Execution Status equals 'Succeeded', and Prior Success Execution is True")
                 duration = self._duration_in_seconds(
                     self.prior_success_execution['lastUpdateTime'], self.current_pipeline_execution['lastUpdateTime']
                 )
-                self.logger.debug(f"{inspect.stack()[0][3]} - Adding SuccessCycleTime Metric")
                 self.add_metric('SuccessCycleTime', self.seconds, duration)
         except AttributeError as e:
             if "'PipelineEventHandler' object has no attribute 'prior_success_execution'" in str(e):
