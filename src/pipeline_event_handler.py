@@ -248,18 +248,22 @@ class PipelineEventHandler():
         # current_execution = self._get_pipeline_execution(self.execution_id)
 
         self.logger.debug(f"{inspect.stack()[0][3]} - Checking the current execution status")
-        if self.current_pipeline_execution['status'] == 'Succeeded':
-            duration = self._duration_in_seconds(
-                self.current_pipeline_execution['startTime'], self.current_pipeline_execution['lastUpdateTime'])
-            self.add_metric('SuccessLeadTime', self.seconds, duration)
-            if self.pipeline_state_is_final and self.prior_success_plus_one_execution:
-                lead_duration = self._duration_in_seconds(
-                    self.prior_success_plus_one_execution['startTime'], self.current_pipeline_execution['lastUpdateTime'])
-                self.add_metric('DeliveryLeadTime', self.seconds, lead_duration)
-        elif self.current_pipeline_execution['status'] == 'Failed':
-            duration = self._duration_in_seconds(
-                self.current_pipeline_execution['startTime'], self.current_pipeline_execution['lastUpdateTime'])
-            self.add_metric('FailureLeadTime', self.seconds, duration)
+        try:
+            if self.current_pipeline_execution['status'] == 'Succeeded':
+                duration = self._duration_in_seconds(
+                    self.current_pipeline_execution['startTime'], self.current_pipeline_execution['lastUpdateTime'])
+                self.add_metric('SuccessLeadTime', self.seconds, duration)  # TODO: add this metric to dashboard
+                if self.pipeline_state_is_final and self.prior_success_plus_one_execution:
+                    lead_duration = self._duration_in_seconds(
+                        self.prior_success_plus_one_execution['startTime'], self.current_pipeline_execution['lastUpdateTime'])
+                    self.add_metric('DeliveryLeadTime', self.seconds, lead_duration)
+            elif self.current_pipeline_execution['status'] == 'Failed':
+                duration = self._duration_in_seconds(
+                    self.current_pipeline_execution['startTime'], self.current_pipeline_execution['lastUpdateTime'])
+                self.add_metric('FailureLeadTime', self.seconds, duration)
+        except AttributeError as e:
+            if "'PipelineEventHandler' object has no attribute 'pipeline_state_is_final'" in str(e):
+                self.logger.debug(f"{inspect.stack()[0][3]} - No metrics to create for delivery lead time")
 
     def add_metric(self, metric_name: str, unit: str, value: int) -> None:
         """
