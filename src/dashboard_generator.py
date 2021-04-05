@@ -29,10 +29,10 @@ class DashboardGenerator():
                 "title": "Cycle Time",
                 "description": "mean time between successful pipeline executions"
             },
-            {
-                "title": "Success Lead Time",
-                "description": "todo fill in more information later"
-            },
+            # {
+            #     "title": "Success Lead Time",
+            #     "description": "todo fill in more information later"
+            # },
             {
                 "title": "Delivery Lead Time",
                 "description": "mean lead time from commit to production, including rework"
@@ -151,17 +151,17 @@ class DashboardGenerator():
                             "color": "#212ebd"
                         }
                     ],
-                    [
-                        ".",
-                        "SuccessLeadTime",
-                        ".",
-                        ".",
-                        {
-                            "label": "Success Lead Time",
-                            "stat": "Average",
-                            "color": "#d6721b"
-                        }
-                    ],
+                    # [
+                    #     ".",
+                    #     "SuccessLeadTime",
+                    #     ".",
+                    #     ".",
+                    #     {
+                    #         "label": "Success Lead Time",
+                    #         "stat": "Average",
+                    #         "color": "#d6721b"
+                    #     }
+                    # ],
                     [
                         ".",
                         "DeliveryLeadTime",
