@@ -154,7 +154,6 @@ class PipelineEventHandler():
                             f"{inspect.stack()[0][3]} - Execution status equals current pipeline execution status, setting self.pipeline_state_is_final")
                         pipeline_state_is_final = True
                         self.pipeline_state_is_final = pipeline_state_is_final
-            break
 
     # def _get_prior_pipeline_execution(self) -> dict:
     #     """
