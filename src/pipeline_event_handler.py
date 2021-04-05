@@ -231,11 +231,15 @@ class PipelineEventHandler():
         # prior_successful_execution = self._get_pipeline_execution(self.prior_success_execution_id)
 
         self.logger.debug(f"{inspect.stack()[0][3]} - Comparing the current and previous successful execution status")
-        if self.current_pipeline_execution and self.current_pipeline_execution['status'] == 'Succeeded' and self.prior_success_execution:
-            duration = self._duration_in_seconds(
-                self.prior_success_execution['lastUpdateTime'], self.current_pipeline_execution['lastUpdateTime']
-            )
-            self.add_metric('SuccessCycleTime', self.seconds, duration)
+        try:
+            if self.current_pipeline_execution and self.current_pipeline_execution['status'] == 'Succeeded' and self.prior_success_execution:
+                duration = self._duration_in_seconds(
+                    self.prior_success_execution['lastUpdateTime'], self.current_pipeline_execution['lastUpdateTime']
+                )
+                self.add_metric('SuccessCycleTime', self.seconds, duration)
+        except AttributeError as e:
+            if "'PipelineEventHandler' object has no attribute 'prior_success_execution'" in str(e):
+                self.logger.debug(f"{inspect.stack()[0][3]} - No metrics to create for cycle time")
 
     def _handle_pipeline_lead_time(self) -> None:
         """
