@@ -30,10 +30,6 @@ class DashboardGenerator():
                 "description": "mean time between successful pipeline executions"
             },
             {
-                "title": "Lead Time",
-                "description": "mean lead time from commit to production, including rework"
-            },
-            {
                 "title": "MTBF",
                 "description": "mean time between pipeline failures"
             },
@@ -145,17 +141,6 @@ class DashboardGenerator():
                             "label": "Cycle Time",
                             "stat": "Average",
                             "color": "#212ebd"
-                        }
-                    ],
-                    [
-                        ".",
-                        "DeliveryLeadTime",
-                        ".",
-                        ".",
-                        {
-                            "label": "Lead Time",
-                            "stat": "Average",
-                            "color": "#d6721b"
                         }
                     ],
                     [
