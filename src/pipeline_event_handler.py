@@ -262,7 +262,7 @@ class PipelineEventHandler():
                 duration = self._duration_in_seconds(
                     self.current_pipeline_execution['startTime'], self.current_pipeline_execution['lastUpdateTime'])
                 self.logger.debug(f"{inspect.stack()[0][3]} - Adding SuccessLeadTime Metric")
-                self.add_metric('SuccessLeadTime', self.seconds, duration)  # TODO: add this metric to dashboard
+                self.add_metric('SuccessLeadTime', self.seconds, duration)
                 if self.pipeline_state_is_final and self.prior_success_plus_one_execution:
                     self.logger.debug(
                         f"{inspect.stack()[0][3]} - Pipeline State is Final and Prior Success plus 1 execution is True")

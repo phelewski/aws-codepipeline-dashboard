@@ -23,7 +23,7 @@ class DashboardGenerator():
             },
             {
                 "title": "Success Lead Time",
-                "description": "todo"
+                "description": "mean lead time for successful pipeline executions"
             },
             {
                 "title": "Delivery Lead Time",
@@ -151,7 +151,7 @@ class DashboardGenerator():
                         {
                             "label": "Success Lead Time",
                             "stat": "Average",
-                            "color": "#d6721b"
+                            "color": "#2ca02c"
                         }
                     ],
                     [
