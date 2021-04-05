@@ -31,7 +31,7 @@ class DashboardGenerator():
             },
             {
                 "title": "Success Lead Time",
-                "description": "TODO:"
+                "description": "todo fill in more information later"
             },
             {
                 "title": "Delivery Lead Time",
@@ -159,7 +159,7 @@ class DashboardGenerator():
                         {
                             "label": "Success Lead Time",
                             "stat": "Average",
-                            "color": "#d6721b"  # TODO: update color
+                            "color": "#d6721b"
                         }
                     ],
                     [
