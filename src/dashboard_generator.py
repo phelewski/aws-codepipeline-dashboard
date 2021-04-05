@@ -18,12 +18,12 @@ class DashboardGenerator():
         self.dashboard_name = f'Pipelines-{self.region}'
         self.widget_descriptions = [
             {
-                "title": "Success Count",
-                "description": "total number of successful pipeline executions"
+                "title": "Success Lead Time",
+                "description": "mean lead time for successful pipeline executions"
             },
             {
-                "title": "Failed Count",
-                "description": "total number of failed pipeline executions"
+                "title": "Delivery Lead Time",
+                "description": "mean lead time from commit to production, including rework"
             },
             {
                 "title": "Cycle Time",
@@ -134,13 +134,35 @@ class DashboardGenerator():
                     ],
                     [
                         ".",
+                        "SuccessLeadTime",
+                        ".",
+                        ".",
+                        {
+                            "label": "Success Lead Time",
+                            "stat": "Average",
+                            "color": "#2ca02c"
+                        }
+                    ],
+                    [
+                        ".",
+                        "DeliveryLeadTime",
+                        ".",
+                        ".",
+                        {
+                            "label": "Delivery Lead Time",
+                            "stat": "Average",
+                            "color": "#212ebd"
+                        }
+                    ],
+                    [
+                        ".",
                         "SuccessCycleTime",
                         ".",
                         ".",
                         {
                             "label": "Cycle Time",
                             "stat": "Average",
-                            "color": "#212ebd"
+                            "color": "#d6721b"
                         }
                     ],
                     [
