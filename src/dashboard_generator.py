@@ -18,14 +18,6 @@ class DashboardGenerator():
         self.dashboard_name = f'Pipelines-{self.region}'
         self.widget_descriptions = [
             {
-                "title": "Success Count",
-                "description": "total number of successful pipeline executions"
-            },
-            {
-                "title": "Failed Count",
-                "description": "total number of failed pipeline executions"
-            },
-            {
                 "title": "Cycle Time",
                 "description": "mean time between successful pipeline executions"
             },
