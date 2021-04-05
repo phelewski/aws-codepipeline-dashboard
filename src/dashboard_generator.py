@@ -30,6 +30,10 @@ class DashboardGenerator():
                 "description": "mean time between successful pipeline executions"
             },
             {
+                "title": "Lead Time",
+                "description": "mean lead time from commit to production, including rework"
+            },
+            {
                 "title": "MTBF",
                 "description": "mean time between pipeline failures"
             },
