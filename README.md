@@ -72,6 +72,7 @@ To create and enter the virtual environment with all of the dependencies install
 ``` bash
 pipenv install
 pipenv shell
+pip install -e .  # from within the virtual environment
 ```
 
 To add other python packages to the virtual environment and dependency list you can enter the following command from within the virtual environment:
@@ -80,4 +81,10 @@ To add other python packages to the virtual environment and dependency list you 
 pipenv install foo  # regular project package
 -- or --
 pipenv install --dev bar  # development package
+```
+
+To run the python unit tests:
+
+``` bash
+make test
 ```

@@ -46,6 +46,9 @@ deployment-script:
 cfn-nag:
 	cfn_nag_scan --input-path $(CFN_TEMPLATE)
 
+test:
+	python -m pytest --cov=src --cov-report term-missing tests
+
 validate: validate-profile validate-stack cfn-nag
 
 validate-profile:
