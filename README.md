@@ -62,3 +62,22 @@ To update the environment after adjusting the lamdba functions and python script
 * Patch: `make deploy-patch`
 * Minor: `make deploy-minor`
 * Major: `make deploy-major`
+
+## Python
+
+To develop the python code you can install and work within the virtual environment. This virtual environment contains all of the dependencies needed for developing the python code in this project.
+
+To create and enter the virtual environment with all of the dependencies installed enter the following commands:
+
+``` bash
+pipenv install
+pipenv shell
+```
+
+To add other python packages to the virtual environment and dependency list you can enter the following command from within the virtual environment:
+
+``` bash
+pipenv install foo  # regular project package
+-- or --
+pipenv install --dev bar  # development package
+```
