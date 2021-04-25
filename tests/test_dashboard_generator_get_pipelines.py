@@ -43,4 +43,5 @@ def test_get_pipelines_ensure_pipelines_are_returned(mock_cloudwatch_list_metric
     response = DashboardGenerator()._get_pipelines()
 
     assert mock_cloudwatch_list_metrics.called
+    assert type(response) == list
     assert response == ['foobar']
