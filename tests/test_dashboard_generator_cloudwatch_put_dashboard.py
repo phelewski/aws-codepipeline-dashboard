@@ -90,3 +90,25 @@ def test_cloudwatch_put_dashboard_ensure_exception_is_handled(mock_boto, env_var
 
     with pytest.raises(botocore.exceptions.ClientError):
         DashboardGenerator().cloudwatch_put_dashboard()
+
+
+@mock.patch('dashboard_generator.boto3')
+@mock.patch('dashboard_generator.DashboardGenerator._get_pipelines')
+@mock.patch('dashboard_generator.DashboardGenerator._generate_widget')
+@mock.patch('dashboard_generator.DashboardGenerator._generate_widget_descriptions')
+def test_cloudwatch_put_dashboard_ensure_methods_are_called(
+    mock_generate_widget_descriptions,
+    mock_generate_widget,
+    mock_get_pipelines,
+    mock_boto,
+    env_variables
+):
+    mock_generate_widget_descriptions.return_value = {}
+    mock_generate_widget.return_value = {}
+    mock_get_pipelines.return_value = ['foobar']
+    DashboardGenerator().cloudwatch_put_dashboard()
+
+    assert mock_boto.client.return_value.put_dashboard.called
+    assert mock_get_pipelines.called
+    assert mock_generate_widget.called
+    assert mock_generate_widget_descriptions.called
