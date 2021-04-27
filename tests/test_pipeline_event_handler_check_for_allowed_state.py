@@ -15,6 +15,6 @@ def test_check_for_allowed_state_ensure_class_variables_are_set_with_allowed_sta
     assert isinstance(response, type(None))
 
 
-def test_check_for_allowed_state_ensure_non_allowed_state_exits(failing_event):
+def test_check_for_allowed_state_ensure_non_allowed_state_exits(failing_state_event):
     with pytest.raises(SystemExit):
-        PipelineEventHandler(failing_event)._check_for_allowed_state()
+        PipelineEventHandler(failing_state_event)._check_for_allowed_state()
