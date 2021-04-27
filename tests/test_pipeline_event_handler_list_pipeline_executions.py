@@ -15,7 +15,6 @@ def test_list_pipeline_executions_ensure_parameters_are_called_properly(mock_bot
     mock_boto.client.return_value.list_pipeline_executions.assert_called_with(
         pipelineName=event_handler.pipeline_name
     )
-    assert isinstance(response, dict)
 
 
 @mock.patch('pipeline_event_handler.boto3')
