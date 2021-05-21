@@ -46,7 +46,10 @@ deployment-script:
 cfn-nag:
 	cfn_nag_scan --input-path $(CFN_TEMPLATE)
 
-validate: validate-profile validate-stack cfn-nag
+test:
+	python -m pytest --cov=src --cov-report term-missing tests
+
+validate: validate-profile validate-stack cfn-nag test
 
 validate-profile:
 	aws sts get-caller-identity > /dev/null

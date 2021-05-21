@@ -180,6 +180,9 @@ class PipelineEventHandler():
         except AttributeError as e:
             if "'PipelineEventHandler' object has no attribute 'prior_state_execution'" in str(e):
                 self.logger.debug(f"{inspect.stack()[0][3]} - No metrics to create for yellow or red time")
+        except TypeError as e:
+            if "'NoneType' object is not subscriptable" in str(e):
+                self.logger.debug(f"{inspect.stack()[0][3]} - No metrics to create for yellow or red time")
 
     def _handle_pipeline_cycle_time(self) -> None:
         """
